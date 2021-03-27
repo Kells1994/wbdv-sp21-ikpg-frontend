@@ -10,10 +10,11 @@ function App() {
         <Route path="/" exact={true}>
           <HomeScreen/>
         </Route>
-        <Route path="/search" exact={true}>
+        <Route path={['/search', '/search/:title']}
+               exact={true}>
           <SearchScreen/>
         </Route>
-        <Route path="/details" exact={true}>
+        <Route path="/details/:someID" exact={true}>
           <DetailsScreen/>
         </Route>
       </BrowserRouter>

@@ -3,46 +3,75 @@ import { Link, useParams } from 'react-router-dom';
 import sheetsService from '../services/gsheets-service'
 
 const SearchScreen = () => {
-  const { className } = useParams();
-  const [searchResults, setSearchResults] = useState({});
-  useEffect(() => {
-    findStudentsByClass(className);
-  });
+  // const { className } = useParams();
+  const [advisory, setAdvisory] = useState(null);
+  const [advisors, setAdvisors] = useState(null);
 
-  const findStudentsByClass = (className) => {
-    sheetsService.findStudentsByClass(className)
-      .then((results) => {
-        setSearchResults(results);
-      })
+  const [advisorySearch, setAdvisorySearch] = useState('');
+
+  const loadSheet = async (advisorySearch) => {
+    const doc = await sheetsService.getAdvisoryRows(advisorySearch);
+    setAdvisory(doc);
+    console.log(advisory);
+  }
+
+  const getAdvisoryList = async () => {
+    const doc = await sheetsService.getAdvisoryList();
+    let advs = [];
+    for (let name in doc) {
+      advs.push(name);
+    }
+    setAdvisors(advs.sort());
   }
 
   return (
     <div>
       <h2>Student Search</h2>
-      <input className="form-control" type="text" placeholder="Student name"/>
+      <input className="form-control"
+             value={advisorySearch}
+             type="text"
+             onChange={(e) =>
+               setAdvisorySearch(e.target.value)
+             }
+      />
       <button className="btn btn-primary"
-              onClick={() => alert('Search!!!')}>
+              onClick={() => loadSheet(advisorySearch)}>
         Search
       </button>
 
+      <button className="btn btn-secondary"
+              onClick={() => getAdvisoryList()}>
+        Get advisory list
+      </button>
+
+      {
+        advisors !== null &&
+        <div>
+          <h4>Available Advisories</h4>
+          <ul className="list-group">
+            {
+              advisors.map(advisor =>
+                <li className="list-group-item">
+                  {advisor}
+                </li>
+              )
+            }
+          </ul>
+        </div>
+      }
       <div>
         <ul className="list-group">
-          <li className="list-group-item">
-            <Link to={`/details/{someID}`}>
-              Kim
-            </Link>
-          </li>
-          <li className="list-group-item">
-            James
-          </li>
-          <li className="list-group-item">
-            Carlos
-          </li>
-          <li className="list-group-item">
-            Louis
-          </li>
+          {
+            advisory !== null &&
+            advisory.map(row =>
+              <li className="list-group-item">
+                <Link to={`/details/{someID}`}>
+                  {`${row.Name} ${row.Math} ${row.English} ${row.Spanish} `}
+                </Link>
+              </li>
+            )
+          }
         </ul>
-        <p>{searchResults.toString()}</p>
       </div>
     </div>
   )

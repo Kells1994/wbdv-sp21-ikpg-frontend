@@ -8,10 +8,6 @@ const HomeScreen = () => {
       <Link to="/search">
         Search
       </Link>
-      <br/>
-      <Link to="/details">
-        Details
-      </Link>
     </div>
   );
 }

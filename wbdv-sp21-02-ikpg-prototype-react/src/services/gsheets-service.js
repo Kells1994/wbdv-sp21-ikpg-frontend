@@ -22,6 +22,41 @@ const getAdvisoryRows = async (advisory) => {
   }
 }
 
+const getAllStudents = async (advisories) => {
+  try {
+    await doc.useServiceAccountAuth({
+      client_email: CLIENT_EMAIL,
+      private_key: PRIVATE_KEY,
+    });
+
+    await doc.loadInfo();
+
+    const temp = [];
+
+    for (let advisory in advisories) {
+      let rows = await doc.sheetsByTitle[advisory].getRows();
+      for(let row in rows){
+        // var key = "happyCount";
+        // var obj = {};
+        // obj[key] = someValueArray;
+        // myArray.push(obj);
+        let studentInfo = rows[row]._rawData
+        let student = {};
+        student['Name'] = studentInfo[0]
+        student['Math'] = studentInfo[1]
+        student['English'] = studentInfo[2]
+        student['Spanish'] = studentInfo[3]
+        student['Advisor'] = advisory
+        temp.push(student)
+      }
+    }
+    return temp;
+
+  } catch (e) {
+    console.error('Error:', e);
+  }
+}
+
 const getAdvisoryList = async () => {
   try {
     await doc.useServiceAccountAuth({
@@ -41,6 +76,7 @@ const getAdvisoryList = async () => {
 const api = {
   getAdvisoryRows,
   getAdvisoryList,
+  getAllStudents
 };
 
 export default api;

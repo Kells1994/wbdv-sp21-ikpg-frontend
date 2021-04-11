@@ -36,10 +36,6 @@ const getAllStudents = async (advisories) => {
     for (let advisory in advisories) {
       let rows = await doc.sheetsByTitle[advisory].getRows();
       for(let row in rows){
-        // var key = "happyCount";
-        // var obj = {};
-        // obj[key] = someValueArray;
-        // myArray.push(obj);
         let studentInfo = rows[row]._rawData
         let student = {};
         student['Name'] = studentInfo[0]
@@ -73,10 +69,27 @@ const getAdvisoryList = async () => {
   }
 }
 
+const getClassNames = async () => {
+  try {
+    await doc.useServiceAccountAuth({
+      client_email: CLIENT_EMAIL,
+      private_key: PRIVATE_KEY,
+    });
+
+    await doc.loadInfo();
+
+    return await doc.sheetsByTitle;
+
+  } catch (e) {
+    console.error('Error:', e);
+  }
+}
+
 const api = {
   getAdvisoryRows,
   getAdvisoryList,
-  getAllStudents
+  getAllStudents,
+  getClassNames
 };
 
 export default api;
